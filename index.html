@@ -2,183 +2,211 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>障害レース・タイム比計算機Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>障害タイム比計算ツール</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; color: #333; }
-        .container { max-width: 550px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { font-size: 1.4rem; text-align: center; color: #1b5e20; border-bottom: 3px solid #4caf50; padding-bottom: 10px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: #555; }
-        select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; outline: none; }
-        select:focus, input:focus { border-color: #4caf50; }
-        .time-inputs { display: flex; gap: 10px; align-items: center; }
-        button { width: 100%; padding: 15px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #1b5e20; }
-        #result { margin-top: 20px; padding: 20px; border-radius: 10px; text-align: center; display: none; }
-        .ratio { font-size: 2.5rem; font-weight: bold; margin: 5px 0; }
-        .level-rank { font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; }
-        .record-info { font-size: 0.85rem; color: #666; background: #eee; padding: 10px; border-radius: 6px; margin-top: 10px; line-height: 1.4; }
-        /* 判定色 */
-        .rank-S { background: #ffebee; color: #c62828; border: 2px solid #ef9a9a; }
-        .rank-A { background: #fff3e0; color: #ef6c00; border: 2px solid #ffcc80; }
-        .rank-B { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
-        .rank-C { background: #f5f5f5; color: #616161; border: 2px solid #bdbdbd; }
+        :root { --primary: #1b4332; --bg: #f4f7f6; --accent: #2980b9; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #2c3e50; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .card { background: white; padding: 18px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        h3 { margin-top: 0; color: var(--primary); font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        
+        label { display: block; font-size: 12px; font-weight: bold; color: #7f8c8d; margin-top: 10px; margin-bottom: 4px; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 16px; box-sizing: border-box; background-color: white; }
+        
+        .btn-main { width: 100%; background: var(--primary); color: white; padding: 16px; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        
+        .record-info-box { font-size: 13px; color: #4a5568; background: #f8f9fa; padding: 12px; border-radius: 4px; margin-top: 10px; border-left: 4px solid var(--primary); display: none; line-height: 1.5; }
+        
+        #resultArea { margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px; display: none; text-align: center; }
+        .ratio-val { font-size: 32px; font-weight: bold; color: var(--primary); margin: 5px 0; }
+        .rank-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-bottom: 10px; }
+        
+        .rank-s { background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
+        .rank-a { background: #fffaf0; color: #c05621; border: 1px solid #fbd38d; }
+        .rank-b { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
+        .rank-c { background: #edf2f7; color: #4a5568; border: 1px solid #cbd5e0; }
+
+        details { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 10px; overflow: hidden; }
+        summary { padding: 15px; font-size: 14px; font-weight: bold; color: var(--primary); cursor: pointer; list-style: none; border-bottom: 1px solid #eee; }
+        .record-list-content { padding: 10px; background: #fafafa; font-size: 12px; max-height: 400px; overflow-y: auto; }
+        .venue-group { margin-bottom: 10px; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
+        .venue-name { font-weight: bold; color: #2e7d32; display: block; margin-bottom: 3px; }
+        .record-row { display: flex; justify-content: space-between; padding: 2px 0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>障害タイム比 計算機</h1>
-    
-    <div class="form-group">
+    <div class="card">
+        <h3>障害タイム比計算</h3>
+        
         <label>競馬場</label>
-        <select id="venueSelect" onchange="updateDistanceOptions()">
+        <select id="venue" onchange="updateCourse()">
             <option value="">選択してください</option>
-            </select>
-    </div>
-
-    <div class="form-group">
-        <label>コース / 距離</label>
-        <select id="distanceSelect" onchange="showRecordInfo()">
-            <option value="">先に競馬場を選んでください</option>
+            <option value="nakayama">中山</option>
+            <option value="tokyo">東京</option>
+            <option value="kyoto">京都</option>
+            <option value="hanshin">阪神</option>
+            <option value="niigata">新潟</option>
+            <option value="kokura">小倉</option>
+            <option value="fukushima">福島</option>
         </select>
-    </div>
 
-    <div id="recordDisplay" class="record-info" style="display:none;"></div>
+        <label>コース / 距離</label>
+        <select id="course" onchange="displayRecord()">
+            <option value="">競馬場を先に選んでください</option>
+        </select>
 
-    <div class="form-group" style="margin-top:20px;">
-        <label>走破タイム</label>
-        <div class="time-inputs">
-            <input type="number" id="min" placeholder="分"> <span>:</span>
-            <input type="number" id="sec" placeholder="秒" step="0.1">
+        <div id="recordInfo" class="record-info-box"></div>
+
+        <label>走破タイム (例 3:15.2 または 315.2)</label>
+        <input type="text" id="timeInput" placeholder="分:秒.ミリ" inputmode="decimal">
+
+        <button class="btn-main" onclick="calculate()">判定を実行</button>
+
+        <div id="resultArea">
+            <div id="rankBadge" class="rank-badge">---</div>
+            <div class="ratio-val" id="ratioResult">0.00%</div>
+            <div id="commentText" class="comment" style="font-size: 13px; color: #718096;"></div>
         </div>
     </div>
 
-    <button onclick="calculate()">レベルを判定する</button>
-
-    <div id="result">
-        <div>レコード比</div>
-        <div class="ratio" id="resRatio">-- %</div>
-        <div class="level-rank" id="resRank">--</div>
-        <div id="resComment" style="font-size: 0.9rem;"></div>
-    </div>
+    <details>
+        <summary>📊 障害コース レコード一覧を表示</summary>
+        <div class="record-list-content" id="masterRecordList"></div>
+    </details>
 </div>
 
 <script>
-// --- データベース部分: ここを自由に編集してコースを追加できます ---
-const recordDB = {
-    "中山": [
-        { dist: "芝3100m", time: 184.2, date: "2018/04/14", horse: "オジュウチョウサン" },
-        { dist: "芝4100m", time: 281.0, date: "1968/12/15", horse: "フジノオー(参考)" },
-        { dist: "芝4250m", time: 252.3, date: "2024/04/13", horse: "イロゴトシ" }
-    ],
-    "東京": [
-        { dist: "芝3000m", time: 194.3, date: "2013/06/22", horse: "アポロマーベリック" },
-        { dist: "芝3110m", time: 201.1, date: "2020/10/18", horse: "フォイヤーヴェルク" },
-        { dist: "芝3300m", time: 193.3, date: "2021/06/26", horse: "ラヴアンドポップ" }
-    ],
-    "小倉": [
-        { dist: "芝2860m", time: 181.1, date: "2023/02/11", horse: "テーオーソクラテス" },
-        { dist: "芝2900m", time: 184.1, date: "2021/02/06", horse: "ショウナンアーチー" },
-        { dist: "芝3390m", time: 220.2, date: "2022/08/27", horse: "ジェミニキング" }
-    ],
-    "福島": [
-        { dist: "芝2750m", time: 188.1, date: "2022/11/05", horse: "テーオーソクラテス" },
-        { dist: "芝2770m", time: 191.1, date: "2023/04/08", horse: "ダイシンクローバー" },
-        { dist: "芝3350m", time: 224.2, date: "2024/07/20", horse: "サクセスエース" },
-        { dist: "芝3380m", time: 224.6, date: "2022/07/23", horse: "ホッコーメヴィウス" }
-    ],
-    "新潟": [
-        { dist: "芝2850m", time: 172.1, date: "2024/07/27", horse: "サクセスエース" },
-        { dist: "芝2890m", time: 175.7, date: "2021/07/31", horse: "トゥルボー" },
-        { dist: "芝3250m", time: 198.8, date: "2024/05/18", horse: "サペラヴィ" },
-        { dist: "芝3280m", time: 201.2, date: "2023/10/15", horse: "サペラヴィ" }
-    ]
-    // 阪神・京都・中京なども同様の形式で追加可能
+const db = {
+    nakayama: { label: "中山", data: [
+        { name: "芝3100m", record: 184.2, date: "2018/04/14", horse: "オジュウチョウサン" },
+        { name: "芝4250m", record: 252.3, date: "2024/04/13", horse: "イロゴトシ" }
+    ]},
+    tokyo: { label: "東京", data: [
+        { name: "芝3000m", record: 194.3, date: "2013/06/22", horse: "アポロマーベリック" },
+        { name: "芝3110m", record: 201.1, date: "2020/10/18", horse: "フォイヤーヴェルク" },
+        { name: "芝3300m", record: 193.3, date: "2021/06/26", horse: "ラヴアンドポップ" }
+    ]},
+    kyoto: { label: "京都", data: [
+        { name: "芝2910m", record: 176.6, date: "2023/11/11", horse: "エコロデュエル" },
+        { name: "芝3170m", record: 186.2, date: "2024/05/25", horse: "サクセスエース" },
+        { name: "芝3930m", record: 262.4, date: "2024/05/11", horse: "マイネルグロン" }
+    ]},
+    hanshin: { label: "阪神", data: [
+        { name: "芝2970m", record: 178.5, date: "2021/04/17", horse: "マイネルプロンプト" },
+        { name: "芝3110m", record: 186.7, date: "2024/03/09", horse: "マイネルグロン" },
+        { name: "芝3140m", record: 189.2, date: "2023/12/02", horse: "ロックユー" }
+    ]},
+    niigata: { label: "新潟", data: [
+        { name: "芝2850m", record: 172.1, date: "2024/07/27", horse: "サクセスエース" },
+        { name: "芝2890m", record: 175.7, date: "2021/07/31", horse: "トゥルボー" },
+        { name: "芝3250m", record: 198.8, date: "2024/05/18", horse: "サペラヴィ" }
+    ]},
+    kokura: { label: "小倉", data: [
+        { name: "芝2860m", record: 181.1, date: "2023/02/11", horse: "テーオーソクラテス" },
+        { name: "芝3390m", record: 220.2, date: "2022/08/27", horse: "ジェミニキング" }
+    ]},
+    fukushima: { label: "福島", data: [
+        { name: "芝2750m", record: 188.1, date: "2022/11/05", horse: "テーオーソクラテス" },
+        { name: "芝2770m", record: 191.1, date: "2023/04/08", horse: "ダイシンクローバー" },
+        { name: "芝3350m", record: 224.2, date: "2024/07/20", horse: "サクセスエース" },
+        { name: "芝3380m", record: 224.6, date: "2022/07/23", horse: "ホッコーメヴィウス" }
+    ]}
 };
 
-// --- 初期化処理 ---
-const venueSelect = document.getElementById('venueSelect');
-for (let venue in recordDB) {
-    let opt = document.createElement('option');
-    opt.value = venue;
-    opt.innerText = venue;
-    venueSelect.appendChild(opt);
+function initRecordList() {
+    const listContainer = document.getElementById('masterRecordList');
+    let html = "";
+    for (const key in db) {
+        html += `<div class="venue-group"><span class="venue-name">■${db[key].label}</span>`;
+        db[key].data.forEach(item => {
+            const m = Math.floor(item.record / 60);
+            const s = (item.record % 60).toFixed(1);
+            html += `<div class="record-row"><span>${item.name}</span><span><b>${m}:${s.padStart(4, '0')}</b> (${item.horse})</span></div>`;
+        });
+        html += `</div>`;
+    }
+    listContainer.innerHTML = html;
 }
+initRecordList();
 
-// 競馬場が選ばれたら距離一覧を更新
-function updateDistanceOptions() {
-    const venue = venueSelect.value;
-    const distSelect = document.getElementById('distanceSelect');
-    distSelect.innerHTML = '<option value="">距離を選択</option>';
-    document.getElementById('recordDisplay').style.display = 'none';
-
-    if (venue && recordDB[venue]) {
-        recordDB[venue].forEach((data, index) => {
-            let opt = document.createElement('option');
+function updateCourse() {
+    const venue = document.getElementById('venue').value;
+    const courseSelect = document.getElementById('course');
+    const recordBox = document.getElementById('recordInfo');
+    courseSelect.innerHTML = '<option value="">コースを選択</option>';
+    recordBox.style.display = 'none';
+    if (venue && db[venue]) {
+        db[venue].data.forEach((item, index) => {
+            const opt = document.createElement('option');
             opt.value = index;
-            opt.innerText = data.dist;
-            distSelect.appendChild(opt);
+            opt.innerText = item.name;
+            courseSelect.appendChild(opt);
         });
     }
 }
 
-// レコード情報を表示
-function showRecordInfo() {
-    const venue = venueSelect.value;
-    const index = document.getElementById('distanceSelect').value;
-    const display = document.getElementById('recordDisplay');
-
-    if (venue !== "" && index !== "") {
-        const data = recordDB[venue][index];
-        display.innerHTML = `🏁 <b>レコード: ${Math.floor(data.time/60)}分${(data.time%60).toFixed(1)}秒</b><br>
-                             👤 保持馬: ${data.horse}<br>
-                             📅 記録日: ${data.date}`;
-        display.style.display = 'block';
+function displayRecord() {
+    const venue = document.getElementById('venue').value;
+    const index = document.getElementById('course').value;
+    const recordBox = document.getElementById('recordInfo');
+    if (venue && index !== "") {
+        const data = db[venue].data[index];
+        const m = Math.floor(data.record / 60);
+        const s = (data.record % 60).toFixed(1);
+        recordBox.innerHTML = `🏁 <b>レコード：${m}:${s.padStart(4, '0')}</b><br>🐎 ${data.horse}<br>📅 ${data.date}`;
+        recordBox.style.display = 'block';
     } else {
-        display.style.display = 'none';
+        recordBox.style.display = 'none';
     }
 }
 
 function calculate() {
-    const venue = venueSelect.value;
-    const index = document.getElementById('distanceSelect').value;
-    if (!venue || index === "") return alert("コースを選択してください");
+    const venue = document.getElementById('venue').value;
+    const index = document.getElementById('course').value;
+    const timeVal = document.getElementById('timeInput').value.trim();
 
-    const record = recordDB[venue][index].time;
-    const min = parseFloat(document.getElementById('min').value) || 0;
-    const sec = parseFloat(document.getElementById('sec').value) || 0;
-    const targetTime = (min * 60) + sec;
+    if (!venue || index === "" || !timeVal) return alert("入力不足です");
 
-    if (targetTime === 0) return alert("タイムを入力してください");
-
-    const ratio = (targetTime / record) * 100;
-    const resDiv = document.getElementById('result');
-    
-    resDiv.style.display = 'block';
-    document.getElementById('resRatio').innerText = ratio.toFixed(2) + ' %';
-
-    resDiv.className = '';
-    const r = document.getElementById('resRank');
-    const c = document.getElementById('resComment');
-
-    if (ratio < 101.5) {
-        r.innerText = "ランクS：異次元";
-        c.innerText = "レコードに肉薄する凄まじい時計です。";
-        resDiv.classList.add('rank-S');
-    } else if (ratio < 103.0) {
-        r.innerText = "ランクA：優秀";
-        c.innerText = "高いレベルで安定したスピードを持っています。";
-        resDiv.classList.add('rank-A');
-    } else if (ratio < 104.5) {
-        r.innerText = "ランクB：標準";
-        c.innerText = "このクラスの平均的な決着タイムです。";
-        resDiv.classList.add('rank-B');
+    // タイム解析ロジック
+    let totalSeconds = 0;
+    if (timeVal.includes(':')) {
+        // "3:15.2" 形式
+        const parts = timeVal.split(':');
+        totalSeconds = (parseFloat(parts[0]) * 60) + parseFloat(parts[1]);
     } else {
-        r.innerText = "ランクC：低調";
-        c.innerText = "時計を要しました。次走は相手関係に注目。";
-        resDiv.classList.add('rank-C');
+        // "315.2" 形式
+        const m = Math.floor(parseFloat(timeVal) / 100);
+        const s = parseFloat(timeVal) % 100;
+        totalSeconds = (m * 60) + s;
+    }
+
+    if (isNaN(totalSeconds) || totalSeconds <= 0) return alert("タイムの形式が正しくありません");
+
+    const record = db[venue].data[index].record;
+    const ratio = (totalSeconds / record) * 100;
+    
+    document.getElementById('resultArea').style.display = 'block';
+    document.getElementById('ratioResult').innerText = ratio.toFixed(2) + "%";
+    
+    const rb = document.getElementById('rankBadge');
+    const ct = document.getElementById('commentText');
+    rb.className = 'rank-badge';
+    
+    if (ratio < 101.5) {
+        rb.innerText = "ランクS：超抜級"; rb.classList.add('rank-s');
+        ct.innerText = "異次元の時計です。重賞制覇レベル。";
+    } else if (ratio < 103.0) {
+        rb.innerText = "ランクA：優秀"; rb.classList.add('rank-a');
+        ct.innerText = "昇級しても即勝ち負けできるスピードです。";
+    } else if (ratio < 104.5) {
+        rb.innerText = "ランクB：標準"; rb.classList.add('rank-b');
+        ct.innerText = "このクラスの平均的な水準です。";
+    } else {
+        rb.innerText = "ランクC：低調"; rb.classList.add('rank-c');
+        ct.innerText = "時計を要しました。馬場やミスの有無を確認。";
     }
 }
 </script>
