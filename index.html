@@ -27,7 +27,6 @@
         .rank-b { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
         .rank-c { background: #edf2f7; color: #4a5568; border: 1px solid #cbd5e0; }
 
-        /* レコード表のスタイル調整 */
         details { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 10px; overflow: hidden; }
         summary { padding: 15px; font-size: 14px; font-weight: bold; color: var(--primary); cursor: pointer; list-style: none; border-bottom: 1px solid #eee; }
         .record-list-content { padding: 10px; background: #fff; font-size: 11px; max-height: 500px; overflow-y: auto; }
@@ -37,10 +36,9 @@
         td { padding: 8px 4px; border-bottom: 1px solid #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
         .venue-header { background: var(--primary); color: white; font-weight: bold; padding: 6px 10px; font-size: 12px; }
         
-        /* 列幅設定 */
-        .col-dist { width: 23%; }
+        .col-dist { width: 22%; }
         .col-time { width: 18%; font-weight: bold; }
-        .col-horse { width: 34%; }
+        .col-horse { width: 35%; }
         .col-date { width: 25%; color: #7f8c8d; }
     </style>
 </head>
@@ -60,6 +58,7 @@
             <option value="niigata">新潟</option>
             <option value="kokura">小倉</option>
             <option value="fukushima">福島</option>
+            <option value="chukyo">中京</option>
         </select>
 
         <label>コース / 距離</label>
@@ -90,38 +89,69 @@
 <script>
 const db = {
     nakayama: { label: "中山", data: [
-        { name: "芝3100m", record: 184.2, date: "2018/4/14", horse: "オジュウチョウサン" },
-        { name: "芝4250m", record: 252.3, date: "2024/4/13", horse: "イロゴトシ" }
-    ]},
-    tokyo: { label: "東京", data: [
-        { name: "芝3000m", record: 194.3, date: "2013/6/22", horse: "アポロマーベリック" },
-        { name: "芝3110m", record: 201.1, date: "2020/10/18", horse: "フォイヤーヴェルク" },
-        { name: "芝3300m", record: 193.3, date: "2021/6/26", horse: "ラヴアンドポップ" }
+        { name: "芝4260m", record: 290.5, date: "2025/4/19", horse: "エコロデュエル" },
+        { name: "芝4250m", record: 283.0, date: "2018/4/14", horse: "オジュウチョウサン" },
+        { name: "芝4100m", record: 276.1, date: "2017/12/23", horse: "オジュウチョウサン" },
+        { name: "芝3570m", record: 237.9, date: "2023/12/2", horse: "ロックユー" },
+        { name: "ダ3550m", record: 238.1, date: "1984/1/15", horse: "ネイティブボーイ" },
+        { name: "芝3370m", record: 225.4, date: "2002/11/30", horse: "ギルデッドエージ" },
+        { name: "芝3350m", record: 220.8, date: "2004/12/4", horse: "メジロオーモンド" },
+        { name: "芝3210m", record: 209.3, date: "2024/9/21", horse: "スマイルスルー" },
+        { name: "ダ3200m", record: 211.0, date: "1997/3/1", horse: "キャニオンストーム" },
+        { name: "芝3030m", record: 200.3, date: "1999/9/19", horse: "リンデンバウム" },
+        { name: "ダ2880m", record: 190.2, date: "2006/4/2", horse: "マイネルホライズン" },
+        { name: "芝2710m", record: 182.2, date: "1999/4/4", horse: "マイネルタスク" },
+        { name: "ダ2700m", record: 176.8, date: "1996/6/16", horse: "パワークリント" }
     ]},
     kyoto: { label: "京都", data: [
-        { name: "芝2910m", record: 176.6, date: "2023/11/11", horse: "エコロデュエル" },
-        { name: "芝3170m", record: 186.2, date: "2024/5/25", horse: "サクセスエース" },
-        { name: "芝3930m", record: 262.4, date: "2024/5/11", horse: "マイネルグロン" }
+        { name: "芝3930m", record: 261.6, date: "2012/5/12", horse: "エムエスワールド" },
+        { name: "ダ3790m", record: 255.0, date: "2007/2/10", horse: "アドマイヤホープ" },
+        { name: "ダ3760m", record: 254.4, date: "2001/11/24", horse: "カネトシガバナー" },
+        { name: "ダ3190m", record: 211.5, date: "2007/1/13", horse: "フミノトキメキ" },
+        { name: "芝3180m", record: 213.5, date: "2000/10/28", horse: "ランドパワー" },
+        { name: "芝3170m", record: 210.4, date: "2011/11/12", horse: "テイエムハリアー" },
+        { name: "ダ3170m", record: 208.4, date: "1995/3/4", horse: "リターンエース" },
+        { name: "ダ2930m", record: 192.2, date: "2010/1/17", horse: "テイエムハリアー" },
+        { name: "ダ2910m", record: 191.2, date: "1996/1/20", horse: "サムソンビッグ" }
+    ]},
+    tokyo: { label: "東京", data: [
+        { name: "芝3300m", record: 215.1, date: "2007/6/9", horse: "メルシーエイタイム" },
+        { name: "ダ3300m", record: 216.2, date: "2010/5/22", horse: "ギルティストライク" },
+        { name: "ダ3285m", record: 216.2, date: "2009/5/23", horse: "エイシンボストン" },
+        { name: "芝3110m", record: 203.6, date: "2023/11/4", horse: "ロードトゥフェイム" },
+        { name: "ダ3100m", record: 202.0, date: "2013/5/18", horse: "アドマイヤツバサ" },
+        { name: "ダ3000m", record: 197.5, date: "2005/5/14", horse: "シルクリスペクト" }
     ]},
     hanshin: { label: "阪神", data: [
-        { name: "芝2970m", record: 178.5, date: "2021/4/17", horse: "マイネルプロンプト" },
-        { name: "芝3110m", record: 186.7, date: "2024/3/9", horse: "マイネルグロン" },
-        { name: "芝3140m", record: 189.2, date: "2023/12/2", horse: "ロックユー" }
-    ]},
-    niigata: { label: "新潟", data: [
-        { name: "芝2850m", record: 172.1, date: "2024/7/27", horse: "サクセスエース" },
-        { name: "芝2890m", record: 175.7, date: "2021/7/31", horse: "トゥルボー" },
-        { name: "芝3250m", record: 198.8, date: "2024/5/18", horse: "サペラヴィ" }
+        { name: "芝3900m", record: 259.1, date: "2020/3/14", horse: "オジュウチョウサン" },
+        { name: "芝3800m", record: 258.1, date: "1999/3/14", horse: "ファイブポインター" },
+        { name: "芝3140m", record: 204.8, date: "2013/9/14", horse: "オースミムーン" },
+        { name: "ダ3110m", record: 205.0, date: "2008/7/5", horse: "バトルブレーヴ" },
+        { name: "ダ2970m", record: 195.7, date: "2007/9/22", horse: "パルティアシチー" }
     ]},
     kokura: { label: "小倉", data: [
-        { name: "芝2860m", record: 181.1, date: "2023/2/11", horse: "テーオーソクラテス" },
-        { name: "芝3390m", record: 220.2, date: "2022/8/27", horse: "ジェミニキング" }
+        { name: "芝3390m", record: 220.0, date: "2010/7/24", horse: "ランヘランバ" },
+        { name: "芝2900m", record: 187.1, date: "2008/8/9", horse: "ロングアキレス" },
+        { name: "芝2860m", record: 186.3, date: "2022/8/13", horse: "リバーシブルレーン" }
+    ]},
+    niigata: { label: "新潟", data: [
+        { name: "芝3290m", record: 214.4, date: "2016/5/14", horse: "ユキノスライダー" },
+        { name: "芝3250m", record: 208.3, date: "2023/7/29", horse: "サクセッション" },
+        { name: "芝2890m", record: 185.5, date: "2022/5/7", horse: "ゼノヴァース" },
+        { name: "芝2850m", record: 181.4, date: "2002/7/27", horse: "ダイワウインダム" }
     ]},
     fukushima: { label: "福島", data: [
-        { name: "芝2750m", record: 188.1, date: "2022/11/5", horse: "テーオーソクラテス" },
-        { name: "芝2770m", record: 191.1, date: "2023/4/8", horse: "ダイシンクローバー" },
-        { name: "芝3350m", record: 224.2, date: "2024/7/20", horse: "サクセスエース" },
-        { name: "芝3380m", record: 224.6, date: "2022/7/23", horse: "ホッコーメヴィウス" }
+        { name: "芝3380m", record: 218.5, date: "2015/4/25", horse: "ラッキーストリーク" },
+        { name: "芝3350m", record: 219.0, date: "2014/10/25", horse: "サンライズロイヤル" },
+        { name: "芝2800m", record: 181.8, date: "2014/11/15", horse: "エーシンジーライン" },
+        { name: "芝2770m", record: 179.3, date: "2015/4/25", horse: "サナシオン" },
+        { name: "芝2750m", record: 177.2, date: "2024/4/6", horse: "ヴェイルネビュラ" }
+    ]},
+    chukyo: { label: "中京", data: [
+        { name: "芝3900m", record: 254.8, date: "2021/5/15", horse: "マーニ" },
+        { name: "芝3330m", record: 217.4, date: "2017/7/15", horse: "ユウキビバワンダー" },
+        { name: "芝3300m", record: 213.3, date: "2020/9/19", horse: "タガノエスプレッソ" },
+        { name: "芝3000m", record: 195.8, date: "2024/8/18", horse: "プリモスペランツァ" }
     ]}
 };
 
@@ -134,12 +164,7 @@ function initRecordList() {
         db[key].data.forEach(item => {
             const m = Math.floor(item.record / 60);
             const s = (item.record % 60).toFixed(1);
-            html += `<tr>
-                        <td>${item.name}</td>
-                        <td class="col-time">${m}:${s.padStart(4, '0')}</td>
-                        <td>${item.horse}</td>
-                        <td class="col-date">${item.date}</td>
-                     </tr>`;
+            html += `<tr><td>${item.name}</td><td class="col-time">${m}:${s.padStart(4, '0')}</td><td>${item.horse}</td><td class="col-date">${item.date}</td></tr>`;
         });
         html += `</tbody></table>`;
     }
