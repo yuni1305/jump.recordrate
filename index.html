@@ -27,19 +27,21 @@
         .rank-b { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
         .rank-c { background: #edf2f7; color: #4a5568; border: 1px solid #cbd5e0; }
 
-        /* レコード表のスタイル */
+        /* レコード表のスタイル調整 */
         details { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 10px; overflow: hidden; }
         summary { padding: 15px; font-size: 14px; font-weight: bold; color: var(--primary); cursor: pointer; list-style: none; border-bottom: 1px solid #eee; }
         .record-list-content { padding: 10px; background: #fff; font-size: 11px; max-height: 500px; overflow-y: auto; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 15px; table-layout: fixed; }
-        th { background: #f1f3f1; color: var(--primary); text-align: left; padding: 6px; font-size: 11px; border-bottom: 2px solid #ddd; }
-        td { padding: 8px 6px; border-bottom: 1px solid #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .venue-header { background: var(--primary); color: white; font-weight: bold; padding: 4px 10px; font-size: 12px; }
-        .col-dist { width: 25%; }
-        .col-time { width: 20%; font-weight: bold; }
-        .col-horse { width: 30%; }
-        .col-date { width: 25%; color: #888; text-align: right; }
+        th { background: #f1f3f1; color: var(--primary); text-align: left; padding: 8px 4px; font-size: 10px; border-bottom: 2px solid #ddd; }
+        td { padding: 8px 4px; border-bottom: 1px solid #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+        .venue-header { background: var(--primary); color: white; font-weight: bold; padding: 6px 10px; font-size: 12px; }
+        
+        /* 列幅設定 */
+        .col-dist { width: 23%; }
+        .col-time { width: 18%; font-weight: bold; }
+        .col-horse { width: 34%; }
+        .col-date { width: 25%; color: #7f8c8d; }
     </style>
 </head>
 <body>
