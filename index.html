@@ -27,12 +27,19 @@
         .rank-b { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
         .rank-c { background: #edf2f7; color: #4a5568; border: 1px solid #cbd5e0; }
 
+        /* レコード表のスタイル */
         details { background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 10px; overflow: hidden; }
         summary { padding: 15px; font-size: 14px; font-weight: bold; color: var(--primary); cursor: pointer; list-style: none; border-bottom: 1px solid #eee; }
-        .record-list-content { padding: 10px; background: #fafafa; font-size: 12px; max-height: 400px; overflow-y: auto; }
-        .venue-group { margin-bottom: 10px; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
-        .venue-name { font-weight: bold; color: #2e7d32; display: block; margin-bottom: 3px; }
-        .record-row { display: flex; justify-content: space-between; padding: 2px 0; }
+        .record-list-content { padding: 10px; background: #fff; font-size: 11px; max-height: 500px; overflow-y: auto; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; table-layout: fixed; }
+        th { background: #f1f3f1; color: var(--primary); text-align: left; padding: 6px; font-size: 11px; border-bottom: 2px solid #ddd; }
+        td { padding: 8px 6px; border-bottom: 1px solid #eee; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .venue-header { background: var(--primary); color: white; font-weight: bold; padding: 4px 10px; font-size: 12px; }
+        .col-dist { width: 25%; }
+        .col-time { width: 20%; font-weight: bold; }
+        .col-horse { width: 30%; }
+        .col-date { width: 25%; color: #888; text-align: right; }
     </style>
 </head>
 <body>
@@ -81,38 +88,38 @@
 <script>
 const db = {
     nakayama: { label: "中山", data: [
-        { name: "芝3100m", record: 184.2, date: "2018/04/14", horse: "オジュウチョウサン" },
-        { name: "芝4250m", record: 252.3, date: "2024/04/13", horse: "イロゴトシ" }
+        { name: "芝3100m", record: 184.2, date: "2018/4/14", horse: "オジュウチョウサン" },
+        { name: "芝4250m", record: 252.3, date: "2024/4/13", horse: "イロゴトシ" }
     ]},
     tokyo: { label: "東京", data: [
-        { name: "芝3000m", record: 194.3, date: "2013/06/22", horse: "アポロマーベリック" },
+        { name: "芝3000m", record: 194.3, date: "2013/6/22", horse: "アポロマーベリック" },
         { name: "芝3110m", record: 201.1, date: "2020/10/18", horse: "フォイヤーヴェルク" },
-        { name: "芝3300m", record: 193.3, date: "2021/06/26", horse: "ラヴアンドポップ" }
+        { name: "芝3300m", record: 193.3, date: "2021/6/26", horse: "ラヴアンドポップ" }
     ]},
     kyoto: { label: "京都", data: [
         { name: "芝2910m", record: 176.6, date: "2023/11/11", horse: "エコロデュエル" },
-        { name: "芝3170m", record: 186.2, date: "2024/05/25", horse: "サクセスエース" },
-        { name: "芝3930m", record: 262.4, date: "2024/05/11", horse: "マイネルグロン" }
+        { name: "芝3170m", record: 186.2, date: "2024/5/25", horse: "サクセスエース" },
+        { name: "芝3930m", record: 262.4, date: "2024/5/11", horse: "マイネルグロン" }
     ]},
     hanshin: { label: "阪神", data: [
-        { name: "芝2970m", record: 178.5, date: "2021/04/17", horse: "マイネルプロンプト" },
-        { name: "芝3110m", record: 186.7, date: "2024/03/09", horse: "マイネルグロン" },
-        { name: "芝3140m", record: 189.2, date: "2023/12/02", horse: "ロックユー" }
+        { name: "芝2970m", record: 178.5, date: "2021/4/17", horse: "マイネルプロンプト" },
+        { name: "芝3110m", record: 186.7, date: "2024/3/9", horse: "マイネルグロン" },
+        { name: "芝3140m", record: 189.2, date: "2023/12/2", horse: "ロックユー" }
     ]},
     niigata: { label: "新潟", data: [
-        { name: "芝2850m", record: 172.1, date: "2024/07/27", horse: "サクセスエース" },
-        { name: "芝2890m", record: 175.7, date: "2021/07/31", horse: "トゥルボー" },
-        { name: "芝3250m", record: 198.8, date: "2024/05/18", horse: "サペラヴィ" }
+        { name: "芝2850m", record: 172.1, date: "2024/7/27", horse: "サクセスエース" },
+        { name: "芝2890m", record: 175.7, date: "2021/7/31", horse: "トゥルボー" },
+        { name: "芝3250m", record: 198.8, date: "2024/5/18", horse: "サペラヴィ" }
     ]},
     kokura: { label: "小倉", data: [
-        { name: "芝2860m", record: 181.1, date: "2023/02/11", horse: "テーオーソクラテス" },
-        { name: "芝3390m", record: 220.2, date: "2022/08/27", horse: "ジェミニキング" }
+        { name: "芝2860m", record: 181.1, date: "2023/2/11", horse: "テーオーソクラテス" },
+        { name: "芝3390m", record: 220.2, date: "2022/8/27", horse: "ジェミニキング" }
     ]},
     fukushima: { label: "福島", data: [
-        { name: "芝2750m", record: 188.1, date: "2022/11/05", horse: "テーオーソクラテス" },
-        { name: "芝2770m", record: 191.1, date: "2023/04/08", horse: "ダイシンクローバー" },
-        { name: "芝3350m", record: 224.2, date: "2024/07/20", horse: "サクセスエース" },
-        { name: "芝3380m", record: 224.6, date: "2022/07/23", horse: "ホッコーメヴィウス" }
+        { name: "芝2750m", record: 188.1, date: "2022/11/5", horse: "テーオーソクラテス" },
+        { name: "芝2770m", record: 191.1, date: "2023/4/8", horse: "ダイシンクローバー" },
+        { name: "芝3350m", record: 224.2, date: "2024/7/20", horse: "サクセスエース" },
+        { name: "芝3380m", record: 224.6, date: "2022/7/23", horse: "ホッコーメヴィウス" }
     ]}
 };
 
@@ -120,13 +127,19 @@ function initRecordList() {
     const listContainer = document.getElementById('masterRecordList');
     let html = "";
     for (const key in db) {
-        html += `<div class="venue-group"><span class="venue-name">■${db[key].label}</span>`;
+        html += `<div class="venue-header">${db[key].label}</div>`;
+        html += `<table><thead><tr><th class="col-dist">距離</th><th class="col-time">タイム</th><th class="col-horse">保持馬</th><th class="col-date">記録日</th></tr></thead><tbody>`;
         db[key].data.forEach(item => {
             const m = Math.floor(item.record / 60);
             const s = (item.record % 60).toFixed(1);
-            html += `<div class="record-row"><span>${item.name}</span><span><b>${m}:${s.padStart(4, '0')}</b> (${item.horse})</span></div>`;
+            html += `<tr>
+                        <td>${item.name}</td>
+                        <td class="col-time">${m}:${s.padStart(4, '0')}</td>
+                        <td>${item.horse}</td>
+                        <td class="col-date">${item.date}</td>
+                     </tr>`;
         });
-        html += `</div>`;
+        html += `</tbody></table>`;
     }
     listContainer.innerHTML = html;
 }
@@ -170,14 +183,11 @@ function calculate() {
 
     if (!venue || index === "" || !timeVal) return alert("入力不足です");
 
-    // タイム解析ロジック
     let totalSeconds = 0;
     if (timeVal.includes(':')) {
-        // "3:15.2" 形式
         const parts = timeVal.split(':');
         totalSeconds = (parseFloat(parts[0]) * 60) + parseFloat(parts[1]);
     } else {
-        // "315.2" 形式
         const m = Math.floor(parseFloat(timeVal) / 100);
         const s = parseFloat(timeVal) % 100;
         totalSeconds = (m * 60) + s;
